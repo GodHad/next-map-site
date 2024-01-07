@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 
 import MapTopBar from '@components/TopBar'
+import LatLngLogo from '@components/TopBar/LatLngLogo'
 
 import { AppConfig } from '@lib/AppConfig'
 import MarkerCategories, { Category } from '@lib/MarkerCategories'
@@ -90,6 +91,7 @@ const MapInner = () => {
                   zoom={allMarkersBoundCenter.minZoom}
                 />
                 <LocateButton />
+                <LatLngLogo />
                 {Object.values(clustersByCategory).map(item => (
                   <LeafletCluster
                     key={item.category}

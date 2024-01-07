@@ -1,5 +1,3 @@
-import LatLngLogo from '@components/TopBar/LatLngLogo'
-
 import { NavMenuVariant } from '@lib/AppConfig'
 
 import NavMenu from '../common/NavMenu'
@@ -10,7 +8,6 @@ const MapTopBar = () => (
     style={{ zIndex: 1000 }}
   >
     <div className="flex justify-between w-full">
-      <LatLngLogo />
       <div className="flex flex-col justify-center">
         <NavMenu variant={NavMenuVariant.TOPNAV} />
       </div>
