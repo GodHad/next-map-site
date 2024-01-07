@@ -15,24 +15,24 @@ export interface MarkerCategoriesValues {
   hideInMenu?: boolean
 }
 
-type MarkerCategoryType = {
+export type MarkerCategoryType = {
   [key in Category]: MarkerCategoriesValues
 }
 
 const MarkerCategories: MarkerCategoryType = {
   [Category.LOCATE]: {
-    name: 'User Location',
+    name: 'Category 1',
     icon: LocateFixed,
     color: colors.green[400],
     hideInMenu: false,
   },
   [Category.CAT1]: {
-    name: 'Category 1',
+    name: 'Category 2',
     icon: Leaf,
     color: colors.blue[400],
   },
   [Category.CAT2]: {
-    name: 'Category 2',
+    name: 'Category 3',
     icon: PersonStanding,
     color: colors.red[400],
   },

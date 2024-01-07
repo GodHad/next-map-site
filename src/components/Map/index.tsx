@@ -26,6 +26,9 @@ const CustomMarker = dynamic(async () => (await import('./Marker')).CustomMarker
 const LocateButton = dynamic(async () => (await import('./ui/LocateButton')).LocateButton, {
   ssr: false,
 })
+const CategorySelect = dynamic(async () => (await import('./ui/CategorySelect')).CategorySelect, {
+  ssr: false,
+})
 const LeafletMapContainer = dynamic(async () => (await import('./LeafletMapContainer')).LeafletMapContainer, {
   ssr: false,
 })
@@ -92,6 +95,7 @@ const MapInner = () => {
                 />
                 <LocateButton />
                 <LatLngLogo />
+                <CategorySelect />
                 {Object.values(clustersByCategory).map(item => (
                   <LeafletCluster
                     key={item.category}
