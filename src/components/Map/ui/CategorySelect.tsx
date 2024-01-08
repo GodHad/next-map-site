@@ -79,7 +79,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onChange }) => {
                                     const color = colors[index % colors.length]; // Pick a color from the array based on the index
                                     return (
                                         <li
-                                            key={option.name}
+                                            key={option.name + index}
                                             onClick={() => handleOptionChange(optionValue)}
                                             style={{
                                                 padding: '12px 16px',

@@ -101,11 +101,11 @@ const MapInner = () => {
           color={MarkerCategories[item.category as Category].color}
           chunkedLoading
         >
-          {item.markers.map(marker => (
+          {item.markers.map((marker, index) => (
             <CustomMarker
               icon={MarkerCategories[marker.category].icon}
               color={MarkerCategories[marker.category].color}
-              key={Array.isArray(marker.position) ? marker.position.join('') : 'defaultKey'}
+              key={Array.isArray(marker.position) ? marker.position.join('') : 'defaultKey' + index}
               position={marker.position}
             />
           ))}
