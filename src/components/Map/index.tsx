@@ -15,6 +15,7 @@ import useLeafletWindow from './useLeafletWindow'
 import useMapContext from './useMapContext'
 import useMarkerData from './useMarkerData'
 import { PlaceValues } from '@lib/Places'
+import { LatLngExpression } from '@src/store/placeTypes'
 
 const LeafletCluster = dynamic(async () => (await import('./LeafletCluster')).LeafletCluster(), {
   ssr: false,
@@ -104,7 +105,7 @@ const MapInner = () => {
             <CustomMarker
               icon={MarkerCategories[marker.category].icon}
               color={MarkerCategories[marker.category].color}
-              key={(marker.position as number[]).join('')}
+              key={Array.isArray(marker.position) ? marker.position.join('') : 'defaultKey'}
               position={marker.position}
             />
           ))}
@@ -126,7 +127,7 @@ const MapInner = () => {
         }}
       >
         <LeafletMapContainer
-          center={allMarkersBoundCenter?.centerPos || [0, 0]}
+          center={allMarkersBoundCenter?.centerPos as LatLngExpression || [0, 0]}
           zoom={allMarkersBoundCenter?.minZoom || 0}
           maxZoom={AppConfig.maxZoom}
           minZoom={AppConfig.minZoom}

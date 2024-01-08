@@ -2,7 +2,7 @@ import { PlacesType } from "@lib/Places";
 
 export const SELECT_PLACE_WITH_WISH = 'SELECT_PLACE_WITH_WISH';
 
-type LatLngExpression = [number, number];
+export type LatLngExpression = [number, number];
 
 // Your action payload type
 type SelectPlaceWithWishPayloadType = {

@@ -4,7 +4,7 @@ import {
     SELECT_PLACE_WITH_WISH,
     PlaceState
 } from "./placeTypes";
-import { LatLngExpression } from "leaflet";
+import { LatLngExpression } from "./placeTypes";
 import { CATEGORY_CLEARED } from "./categoryTypes";
 
 export function selectPlaceWithWish(
