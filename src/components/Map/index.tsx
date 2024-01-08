@@ -94,9 +94,9 @@ const MapInner = () => {
       <LocateButton key="locateButton" />,
       <LatLngLogo key="latLngLogo" />,
       <CategorySelect key="categorySelect" />,
-      ...Object.values(clustersByCategory).map(item => (
+      ...Object.values(clustersByCategory).map((item, index) => (
         <LeafletCluster
-          key={item.category}
+          key={item.category + index}
           icon={MarkerCategories[item.category as Category].icon}
           color={MarkerCategories[item.category as Category].color}
           chunkedLoading
