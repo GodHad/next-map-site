@@ -7,7 +7,7 @@ import { AppConfig } from '@lib/AppConfig'
 import { PlacesClusterType, PlacesType } from '@lib/Places'
 
 interface useMapDataValues {
-  locations?: PlacesType
+  locations: PlacesType | null
   map?: Map
   viewportWidth?: number
   viewportHeight?: number

@@ -9,6 +9,7 @@ export enum Category {
 }
 
 export interface MarkerCategoriesValues {
+  category: Category
   name: string
   icon: FunctionComponent<LucideProps>
   color: string
@@ -21,17 +22,20 @@ export type MarkerCategoryType = {
 
 const MarkerCategories: MarkerCategoryType = {
   [Category.LOCATE]: {
+    category: Category.LOCATE,
     name: 'Category 1',
     icon: LocateFixed,
     color: colors.green[400],
     hideInMenu: false,
   },
   [Category.CAT1]: {
+    category: Category.CAT1,
     name: 'Category 2',
     icon: Leaf,
     color: colors.blue[400],
   },
   [Category.CAT2]: {
+    category: Category.CAT2,
     name: 'Category 3',
     icon: PersonStanding,
     color: colors.red[400],

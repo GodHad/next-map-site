@@ -1,18 +1,20 @@
 import dynamic from 'next/dynamic'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
+import { useSelector } from 'react-redux'
+import { AppState } from '@src/store'
 
 import MapTopBar from '@components/TopBar'
 import LatLngLogo from '@components/TopBar/LatLngLogo'
 
 import { AppConfig } from '@lib/AppConfig'
 import MarkerCategories, { Category } from '@lib/MarkerCategories'
-import { Places } from '@lib/Places'
 
 import MapContextProvider from './MapContextProvider'
 import useLeafletWindow from './useLeafletWindow'
 import useMapContext from './useMapContext'
 import useMarkerData from './useMarkerData'
+import { PlaceValues } from '@lib/Places'
 
 const LeafletCluster = dynamic(async () => (await import('./LeafletCluster')).LeafletCluster(), {
   ssr: false,
@@ -46,8 +48,10 @@ const MapInner = () => {
     refreshRate: 200,
   })
 
-  const { clustersByCategory, allMarkersBoundCenter } = useMarkerData({
-    locations: Places,
+  const places = useSelector((appState: AppState) => appState.places.places);
+
+  const { allMarkersBoundCenter } = useMarkerData({
+    locations: places,
     map,
     viewportWidth,
     viewportHeight,
@@ -55,19 +59,60 @@ const MapInner = () => {
 
   const isLoading = !map || !leafletWindow || !viewportWidth || !viewportHeight
 
-  /** watch position & zoom of all markers */
-  useEffect(() => {
-    if (!allMarkersBoundCenter || !map) return
+  let mapChildren: JSX.Element[] = [];
 
-    const moveEnd = () => {
-      map.setMinZoom(2)
-      map.off('moveend', moveEnd)
-    }
+  const clustersByCategory: {
+    category: number;
+    markers: PlaceValues[];
+  }[] = useMemo(() => {
+    if (!places) return [];
 
-    map.setMinZoom(0)
-    map.flyTo(allMarkersBoundCenter.centerPos, allMarkersBoundCenter.minZoom, { animate: false })
-    map.once('moveend', moveEnd)
-  }, [allMarkersBoundCenter])
+    const groupedLocations = places.reduce<Record<number, PlaceValues[]>>((acc, place) => {
+      const { category } = place;
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(place);
+      return acc;
+    }, {});
+
+    return Object.entries(groupedLocations).map(([category, markers]) => ({
+      category: Number(category),
+      markers,
+    }));
+  }, [places]);
+
+
+  if (!isLoading) {
+    mapChildren = [
+      <CenterToMarkerButton
+        key="centerButton"
+        center={allMarkersBoundCenter.centerPos}
+        zoom={allMarkersBoundCenter.minZoom}
+      />,
+      <LocateButton key="locateButton" />,
+      <LatLngLogo key="latLngLogo" />,
+      <CategorySelect key="categorySelect" />,
+      ...Object.values(clustersByCategory).map(item => (
+        <LeafletCluster
+          key={item.category}
+          icon={MarkerCategories[item.category as Category].icon}
+          color={MarkerCategories[item.category as Category].color}
+          chunkedLoading
+        >
+          {item.markers.map(marker => (
+            <CustomMarker
+              icon={MarkerCategories[marker.category].icon}
+              color={MarkerCategories[marker.category].color}
+              key={(marker.position as number[]).join('')}
+              position={marker.position}
+            />
+          ))}
+        </LeafletCluster>
+      )),
+    ];
+  }
+
 
   return (
     <div className="h-full w-full absolute overflow-hidden" ref={viewportRef}>
@@ -80,46 +125,14 @@ const MapInner = () => {
           height: viewportHeight ? viewportHeight - AppConfig.ui.topBarHeight : '100%',
         }}
       >
-        {allMarkersBoundCenter && clustersByCategory && (
-          <LeafletMapContainer
-            center={allMarkersBoundCenter.centerPos}
-            zoom={allMarkersBoundCenter.minZoom}
-            maxZoom={AppConfig.maxZoom}
-            minZoom={AppConfig.minZoom}
-          >
-            {!isLoading ? (
-              <>
-                <CenterToMarkerButton
-                  center={allMarkersBoundCenter.centerPos}
-                  zoom={allMarkersBoundCenter.minZoom}
-                />
-                <LocateButton />
-                <LatLngLogo />
-                <CategorySelect />
-                {Object.values(clustersByCategory).map(item => (
-                  <LeafletCluster
-                    key={item.category}
-                    icon={MarkerCategories[item.category as Category].icon}
-                    color={MarkerCategories[item.category as Category].color}
-                    chunkedLoading
-                  >
-                    {item.markers.map(marker => (
-                      <CustomMarker
-                        icon={MarkerCategories[marker.category].icon}
-                        color={MarkerCategories[marker.category].color}
-                        key={(marker.position as number[]).join('')}
-                        position={marker.position}
-                      />
-                    ))}
-                  </LeafletCluster>
-                ))}
-              </>
-            ) : (
-              // eslint-disable-next-line react/jsx-no-useless-fragment
-              <></>
-            )}
-          </LeafletMapContainer>
-        )}
+        <LeafletMapContainer
+          center={allMarkersBoundCenter?.centerPos || [0, 0]}
+          zoom={allMarkersBoundCenter?.minZoom || 0}
+          maxZoom={AppConfig.maxZoom}
+          minZoom={AppConfig.minZoom}
+        >
+          {mapChildren}
+        </LeafletMapContainer>
       </div>
     </div>
   )

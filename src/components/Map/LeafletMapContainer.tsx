@@ -1,7 +1,12 @@
-import { LatLngExpression, MapOptions } from 'leaflet'
+import { LatLngExpression, LeafletMouseEvent, MapOptions } from 'leaflet'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { ThunkDispatch } from 'redux-thunk'
+import { PlaceState } from '@src/store/placeTypes'
 import useMapContext from './useMapContext'
+import { AnyAction } from 'redux'
+import { selectPlaceWithWish } from '@src/store/placeActions'
+import { AppState } from '@src/store'
 
 export const LeafletMapContainer: React.FC<
   {
@@ -10,12 +15,16 @@ export const LeafletMapContainer: React.FC<
     zoom: number
   } & MapOptions
 > = ({ ...options }) => {
+
+  const dispatch = useDispatch<ThunkDispatch<PlaceState, any, AnyAction>>()
   const { setMap } = useMapContext()
 
-  const handleClick = (event: any) => {
-    console.log(event.latlng.lat, event.latlng.lng);
+  const handleClick = (event: LeafletMouseEvent) => {
+    if (!!category) dispatch(selectPlaceWithWish(event.latlng));
   };
 
+  const category = useSelector((appState: AppState) => appState.category)
+  
   return (
     <MapContainer
       ref={e => setMap && setMap(e || undefined)}

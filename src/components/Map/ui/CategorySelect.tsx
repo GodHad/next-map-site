@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppConfig } from '@lib/AppConfig'
 import { StarIcon } from 'lucide-react'
 import MarkerCategories, { MarkerCategoriesValues, MarkerCategoryType } from '@lib/MarkerCategories'
+import { useDispatch, useSelector } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { AppState } from '@src/store';
+import { categorySelected } from '@src/store/categoryActions';
+import { CategoryState } from '@src/store/categoryTypes';
 
 const colors = [
     '#28a745', // Green
@@ -32,11 +38,21 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onChange }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<MarkerCategoriesValues | null>(null);
 
+    const dispatch = useDispatch<ThunkDispatch<CategoryState, null, AnyAction>>()
+
     const handleOptionChange = (option: MarkerCategoriesValues) => {
         setSelectedOption(option);
         onChange(option.name);
+        dispatch(categorySelected(option))
         setIsOpen(false); // Close the dropdown after selecting an option
     };
+
+    const category = useSelector((appState: AppState) => appState.category)
+    
+    useEffect(() => {
+        console.log(category);
+        
+    }, [category])
 
     // Define a type guard function
     function isMarkerCategoriesValues(value: any): value is MarkerCategoriesValues {
@@ -64,7 +80,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onChange }) => {
                                     return (
                                         <li
                                             key={option.name}
-                                            onClick={() => handleOptionChange(option)}
+                                            onClick={() => handleOptionChange(optionValue)}
                                             style={{
                                                 padding: '12px 16px',
                                                 margin: '8px 0',
